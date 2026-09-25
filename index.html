@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#202225">
+  <meta name="theme-color" content="#0d0d0f">
+
   <title>Cholobots</title>
 
   <style>
@@ -11,43 +12,71 @@
       box-sizing: border-box;
     }
 
-    html, body {
+    :root {
+      --black: #0d0d0f;
+      --panel: #151518;
+      --panel-light: #1c1c20;
+      --input: #232328;
+
+      --text: #f2f2f3;
+      --muted: #98989f;
+      --faint: #68686f;
+
+      --accent: #f2c94c;
+      --green: #23a55a;
+    }
+
+    html,
+    body {
       margin: 0;
       width: 100%;
       height: 100%;
     }
 
     body {
-      background: #d7d9dd;
-      color: #202124;
-      font-family: Arial, Helvetica, sans-serif;
+      background: var(--black);
+      color: var(--text);
+      font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
       display: flex;
-      align-items: center;
       justify-content: center;
     }
 
-    .messenger {
-      width: min(820px, calc(100% - 32px));
-      height: min(720px, calc(100vh - 32px));
-      background: #f7f7f5;
-      border: 2px solid #202124;
-      box-shadow: 8px 8px 0 #202124;
+    .app {
+      width: 100%;
+      max-width: 1100px;
+      min-height: 100dvh;
+
+      background: var(--panel);
+
       display: flex;
       flex-direction: column;
-      overflow: hidden;
+
+      border-left: 1px solid #242429;
+      border-right: 1px solid #242429;
     }
 
     /* HEADER */
 
-    .topbar {
-      min-height: 72px;
-      padding: 12px 18px;
-      background: #ece9df;
-      border-bottom: 2px solid #202124;
+    .header {
+      height: 72px;
+      flex: 0 0 72px;
+
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
+
+      padding: 0 24px;
+
+      background: #111113;
+      border-bottom: 1px solid #29292e;
     }
 
     .identity {
@@ -57,43 +86,55 @@
     }
 
     .avatar {
-      width: 44px;
-      height: 44px;
-      border: 2px solid #202124;
-      background: #ffd94a;
+      width: 42px;
+      height: 42px;
+
+      border-radius: 50%;
+
+      background: var(--accent);
+      color: #111;
+
       display: grid;
       place-items: center;
-      font-size: 22px;
+
+      font-size: 18px;
       font-weight: 900;
     }
 
-    .identity-text strong {
-      display: block;
-      font-size: 15px;
-      letter-spacing: .08em;
+    .identity-info {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .username {
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: .06em;
     }
 
     .status {
-      margin-top: 4px;
-      font-size: 12px;
       display: flex;
       align-items: center;
       gap: 6px;
+
+      color: var(--muted);
+      font-size: 12px;
     }
 
-    .online-dot {
-      width: 9px;
-      height: 9px;
-      background: #3ba55c;
+    .online {
+      width: 8px;
+      height: 8px;
+
+      background: var(--green);
       border-radius: 50%;
-      display: inline-block;
     }
 
     .brand {
+      color: var(--faint);
       font-size: 12px;
       font-weight: 800;
-      letter-spacing: .12em;
-      opacity: .55;
+      letter-spacing: .16em;
     }
 
     /* CHAT */
@@ -101,94 +142,113 @@
     .chat {
       flex: 1;
       overflow-y: auto;
-      padding: 28px 22px;
+
+      padding: 30px 0 50px;
       scroll-behavior: smooth;
     }
 
-    .system-message {
+    .system {
+      color: var(--faint);
+
+      font-size: 12px;
       text-align: center;
-      font-size: 11px;
-      letter-spacing: .08em;
-      opacity: .5;
-      margin-bottom: 28px;
+
+      margin: 6px 20px 36px;
     }
 
     .message {
       display: flex;
-      gap: 12px;
-      margin-bottom: 26px;
-      animation: appear .22s ease-out;
+      gap: 16px;
+
+      padding: 10px 28px;
+
+      animation: messageIn .2s ease-out;
     }
 
-    .message.you {
-      flex-direction: row-reverse;
+    .message:hover {
+      background: rgba(255,255,255,.018);
     }
 
-    .mini-avatar {
-      width: 36px;
-      height: 36px;
-      flex: 0 0 36px;
-      border: 2px solid #202124;
+    .message-avatar {
+      width: 42px;
+      height: 42px;
+      flex: 0 0 42px;
+
+      border-radius: 50%;
+
       display: grid;
       place-items: center;
-      font-size: 14px;
+
       font-weight: 900;
     }
 
     .cholo-avatar {
-      background: #ffd94a;
+      background: var(--accent);
+      color: #111;
     }
 
     .you-avatar {
-      background: #ffffff;
+      background: #34343b;
+      color: #ddd;
     }
 
-    .message-body {
-      max-width: 72%;
+    .message-content {
+      flex: 1;
+      min-width: 0;
     }
 
-    .you .message-body {
-      text-align: right;
+    .message-meta {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+
+      margin-bottom: 5px;
     }
 
-    .meta {
-      font-size: 11px;
+    .message-name {
+      font-size: 14px;
       font-weight: 800;
-      letter-spacing: .08em;
-      margin-bottom: 6px;
     }
 
-    .time {
-      font-weight: normal;
-      opacity: .45;
-      margin-left: 6px;
-      letter-spacing: 0;
+    .cholo-name {
+      color: var(--accent);
     }
 
-    .bubble {
-      display: inline-block;
-      text-align: left;
-      background: white;
-      border: 2px solid #202124;
-      padding: 12px 14px;
-      line-height: 1.45;
+    .message-time {
+      color: var(--faint);
+      font-size: 11px;
+    }
+
+    .message-text {
+      color: #dedee1;
+
       font-size: 16px;
-      box-shadow: 3px 3px 0 rgba(32,33,36,.18);
+      line-height: 1.5;
+
+      max-width: 760px;
+
+      white-space: normal;
+      overflow-wrap: anywhere;
     }
 
-    .you .bubble {
-      background: #dfe7ff;
+    .message-text strong {
+      color: #fff;
     }
 
     /* TYPING */
 
     .typing {
       display: none;
+
       align-items: center;
       gap: 8px;
-      margin: -10px 0 24px 48px;
+
+      margin-left: 86px;
+      padding: 6px 0 10px;
+
+      color: var(--muted);
+
       font-size: 12px;
-      opacity: .6;
       font-style: italic;
     }
 
@@ -196,180 +256,291 @@
       display: flex;
     }
 
-    .dots span {
+    .typing-dots span {
       display: inline-block;
-      animation: blink 1.1s infinite;
+      animation: typing 1.1s infinite;
     }
 
-    .dots span:nth-child(2) {
+    .typing-dots span:nth-child(2) {
       animation-delay: .15s;
     }
 
-    .dots span:nth-child(3) {
-      animation-delay: .3s;
+    .typing-dots span:nth-child(3) {
+      animation-delay: .30s;
     }
 
-    /* INPUT */
+    /* COMPOSER */
+
+    .composer-area {
+      flex: 0 0 auto;
+
+      padding: 0 24px 22px;
+
+      background:
+        linear-gradient(
+          to bottom,
+          rgba(21,21,24,0),
+          var(--panel) 24px
+        );
+    }
 
     .composer {
-      padding: 14px;
-      border-top: 2px solid #202124;
-      background: #ece9df;
-    }
-
-    .input-wrap {
       display: flex;
-      border: 2px solid #202124;
-      background: white;
+      align-items: center;
+
+      background: var(--input);
+
+      border: 1px solid #303036;
+      border-radius: 9px;
+
+      overflow: hidden;
     }
 
     input {
       flex: 1;
       min-width: 0;
+
+      padding: 16px 18px;
+
       border: 0;
       outline: 0;
-      padding: 15px;
-      font-size: 16px;
+
       background: transparent;
+      color: white;
+
+      font-family: inherit;
+      font-size: 16px;
+    }
+
+    input::placeholder {
+      color: #777780;
     }
 
     button {
       width: 58px;
+      height: 52px;
+
       border: 0;
-      border-left: 2px solid #202124;
-      background: #ffd94a;
-      color: #202124;
-      font-size: 22px;
-      font-weight: bold;
+
+      background: transparent;
+      color: var(--accent);
+
+      font-size: 21px;
+
       cursor: pointer;
     }
 
     button:hover {
-      filter: brightness(.96);
+      background: rgba(255,255,255,.04);
     }
 
     button:disabled {
+      opacity: .35;
       cursor: default;
-      opacity: .45;
     }
 
-    .composer-note {
-      margin-top: 7px;
+    .domain {
+      margin-top: 8px;
+
+      color: #4f4f56;
+
       font-size: 10px;
-      opacity: .45;
+      text-align: right;
+
+      letter-spacing: .08em;
     }
 
-    @keyframes appear {
+    @keyframes messageIn {
       from {
         opacity: 0;
-        transform: translateY(5px);
+        transform: translateY(4px);
       }
+
       to {
         opacity: 1;
         transform: translateY(0);
       }
     }
 
-    @keyframes blink {
-      0%, 60%, 100% { opacity: .25; }
-      30% { opacity: 1; }
+    @keyframes typing {
+      0%, 60%, 100% {
+        opacity: .2;
+      }
+
+      30% {
+        opacity: 1;
+      }
     }
 
-    /* PHONE */
+    /* MOBILE */
 
-    @media (max-width: 600px) {
-      body {
-        background: #f7f7f5;
-      }
+    @media (max-width: 650px) {
 
-      .messenger {
-        width: 100%;
-        height: 100dvh;
+      .app {
         border: 0;
-        box-shadow: none;
       }
 
-      .topbar {
-        min-height: 66px;
+      .header {
+        height: 64px;
+        flex-basis: 64px;
+
+        padding: 0 16px;
+      }
+
+      .avatar {
+        width: 38px;
+        height: 38px;
       }
 
       .brand {
-        display: none;
+        font-size: 10px;
       }
 
       .chat {
-        padding: 22px 14px;
+        padding-top: 22px;
       }
 
-      .message-body {
-        max-width: 82%;
+      .message {
+        padding: 10px 16px;
+        gap: 12px;
       }
 
-      .bubble {
+      .message-avatar {
+        width: 38px;
+        height: 38px;
+        flex-basis: 38px;
+      }
+
+      .message-text {
         font-size: 15px;
       }
+
+      .typing {
+        margin-left: 66px;
+      }
+
+      .composer-area {
+        padding: 0 12px 12px;
+      }
+
+      .domain {
+        display: none;
+      }
     }
+
   </style>
 </head>
 
 <body>
 
-  <main class="messenger">
+  <main class="app">
 
-    <header class="topbar">
+    <!-- HEADER -->
+
+    <header class="header">
+
       <div class="identity">
-        <div class="avatar">C</div>
 
-        <div class="identity-text">
-          <strong>CHOLO</strong>
+        <div class="avatar">
+          C
+        </div>
+
+        <div class="identity-info">
+
+          <div class="username">
+            CHOLO
+          </div>
 
           <div class="status">
-            <span class="online-dot"></span>
-            online
+            <span class="online"></span>
+            Online
           </div>
+
         </div>
+
       </div>
 
       <div class="brand">
         CHOLOBOTS
       </div>
+
     </header>
 
-    <section class="chat" id="chat">
 
-      <div class="system-message">
+    <!-- CHAT -->
+
+    <section
+      class="chat"
+      id="chat"
+      aria-live="polite"
+    >
+
+      <div class="system">
         You started a conversation with Cholo.
       </div>
 
-      <div class="message">
-        <div class="mini-avatar cholo-avatar">C</div>
 
-        <div class="message-body">
-          <div class="meta">
-            CHOLO
-            <span class="time" id="openingTime"></span>
+      <!-- OPENING MESSAGE -->
+
+      <div class="message">
+
+        <div class="message-avatar cholo-avatar">
+          C
+        </div>
+
+        <div class="message-content">
+
+          <div class="message-meta">
+
+            <span class="message-name cholo-name">
+              CHOLO
+            </span>
+
+            <span
+              class="message-time"
+              id="openingTime"
+            ></span>
+
           </div>
 
-          <div class="bubble">
+          <div class="message-text">
             <strong>¿Qué onda?</strong><br>
             What brings you here today?
           </div>
+
         </div>
+
       </div>
 
-      <div class="typing" id="typing">
-        Cholo is typing
-        <span class="dots">
+
+      <!-- TYPING -->
+
+      <div
+        class="typing"
+        id="typing"
+      >
+
+        <span>
+          Cholo is typing
+        </span>
+
+        <span class="typing-dots">
           <span>●</span>
           <span>●</span>
           <span>●</span>
         </span>
+
       </div>
 
     </section>
 
-    <footer class="composer">
-      <div class="input-wrap">
+
+    <!-- MESSAGE COMPOSER -->
+
+    <footer class="composer-area">
+
+      <div class="composer">
+
         <input
           id="visitorAnswer"
           type="text"
@@ -379,134 +550,291 @@
           autofocus
         >
 
-        <button id="sendButton" aria-label="Send message">
+        <button
+          id="sendButton"
+          aria-label="Send message"
+        >
           ➤
         </button>
+
       </div>
 
-      <div class="composer-note">
+      <div class="domain">
         cholobot.com
       </div>
+
     </footer>
 
   </main>
 
+
   <script>
-    const chat = document.getElementById("chat");
-    const input = document.getElementById("visitorAnswer");
-    const sendButton = document.getElementById("sendButton");
-    const typing = document.getElementById("typing");
-    const openingTime = document.getElementById("openingTime");
+
+    const chat =
+      document.getElementById("chat");
+
+    const input =
+      document.getElementById("visitorAnswer");
+
+    const sendButton =
+      document.getElementById("sendButton");
+
+    const typing =
+      document.getElementById("typing");
+
+    const openingTime =
+      document.getElementById("openingTime");
+
 
     let introComplete = false;
 
+
     function currentTime() {
-      return new Intl.DateTimeFormat([], {
-        hour: "numeric",
-        minute: "2-digit"
-      }).format(new Date());
+
+      return new Intl.DateTimeFormat(
+        [],
+        {
+          hour: "numeric",
+          minute: "2-digit"
+        }
+      ).format(new Date());
+
     }
 
-    openingTime.textContent = currentTime();
+
+    openingTime.textContent =
+      "Today at " + currentTime();
+
 
     function scrollToBottom() {
-      chat.scrollTop = chat.scrollHeight;
+
+      chat.scrollTop =
+        chat.scrollHeight;
+
     }
+
 
     function addVisitorMessage(text) {
-      const message = document.createElement("div");
-      message.className = "message you";
 
-      message.innerHTML = `
-        <div class="mini-avatar you-avatar">Y</div>
+      const message =
+        document.createElement("div");
 
-        <div class="message-body">
-          <div class="meta">
-            YOU
-            <span class="time">${currentTime()}</span>
-          </div>
+      message.className =
+        "message";
 
-          <div class="bubble"></div>
-        </div>
-      `;
 
-      message.querySelector(".bubble").textContent = text;
+      const avatar =
+        document.createElement("div");
 
-      chat.insertBefore(message, typing);
+      avatar.className =
+        "message-avatar you-avatar";
+
+      avatar.textContent =
+        "Y";
+
+
+      const content =
+        document.createElement("div");
+
+      content.className =
+        "message-content";
+
+
+      const meta =
+        document.createElement("div");
+
+      meta.className =
+        "message-meta";
+
+
+      const name =
+        document.createElement("span");
+
+      name.className =
+        "message-name";
+
+      name.textContent =
+        "YOU";
+
+
+      const time =
+        document.createElement("span");
+
+      time.className =
+        "message-time";
+
+      time.textContent =
+        "Today at " + currentTime();
+
+
+      const textElement =
+        document.createElement("div");
+
+      textElement.className =
+        "message-text";
+
+      textElement.textContent =
+        text;
+
+
+      meta.appendChild(name);
+      meta.appendChild(time);
+
+      content.appendChild(meta);
+      content.appendChild(textElement);
+
+      message.appendChild(avatar);
+      message.appendChild(content);
+
+
+      chat.insertBefore(
+        message,
+        typing
+      );
+
+
       scrollToBottom();
+
     }
+
 
     function addCholoMessage(html) {
-      const message = document.createElement("div");
-      message.className = "message";
+
+      const message =
+        document.createElement("div");
+
+      message.className =
+        "message";
+
 
       message.innerHTML = `
-        <div class="mini-avatar cholo-avatar">C</div>
 
-        <div class="message-body">
-          <div class="meta">
-            CHOLO
-            <span class="time">${currentTime()}</span>
+        <div class="message-avatar cholo-avatar">
+          C
+        </div>
+
+        <div class="message-content">
+
+          <div class="message-meta">
+
+            <span class="message-name cholo-name">
+              CHOLO
+            </span>
+
+            <span class="message-time">
+              Today at ${currentTime()}
+            </span>
+
           </div>
 
-          <div class="bubble">${html}</div>
+          <div class="message-text">
+            ${html}
+          </div>
+
         </div>
+
       `;
 
-      chat.insertBefore(message, typing);
+
+      chat.insertBefore(
+        message,
+        typing
+      );
+
+
       scrollToBottom();
+
     }
+
 
     function showTyping() {
-      typing.classList.add("visible");
+
+      typing.classList.add(
+        "visible"
+      );
+
       scrollToBottom();
+
     }
+
 
     function hideTyping() {
-      typing.classList.remove("visible");
+
+      typing.classList.remove(
+        "visible"
+      );
+
     }
 
-    function sendMessage() {
-      const text = input.value.trim();
 
-      if (!text) return;
+    function sendMessage() {
+
+      const text =
+        input.value.trim();
+
+
+      if (!text) {
+        return;
+      }
+
 
       addVisitorMessage(text);
 
+
       input.value = "";
+
       input.disabled = true;
       sendButton.disabled = true;
 
+
       showTyping();
 
+
       setTimeout(() => {
+
         hideTyping();
 
+
         if (!introComplete) {
+
           addCholoMessage(
-            "<strong>¡Órale!</strong><br><br>" +
+            "<strong>¡Órale!</strong><br>" +
             "Pues let me show you what us Cholobots do."
           );
 
           introComplete = true;
 
-          input.placeholder = "Message Cholo...";
         }
+
 
         input.disabled = false;
         sendButton.disabled = false;
+
         input.focus();
 
+
       }, 1100);
+
     }
 
-    sendButton.addEventListener("click", sendMessage);
 
-    input.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") {
-        sendMessage();
+    sendButton.addEventListener(
+      "click",
+      sendMessage
+    );
+
+
+    input.addEventListener(
+      "keydown",
+      function(event) {
+
+        if (event.key === "Enter") {
+          sendMessage();
+        }
+
       }
-    });
+    );
+
   </script>
 
 </body>
