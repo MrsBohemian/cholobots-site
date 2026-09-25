@@ -1,543 +1,433 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#0d0d0f">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#000000">
 
-  <title>Cholobots</title>
+<title>Cholobots</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
+<style>
+  * { box-sizing: border-box; }
+
+  :root {
+    --black: #050505;
+    --panel: #17171a;
+    --panel2: #202024;
+    --text: #f1f1f2;
+    --muted: #96969d;
+    --yellow: #ffc21c;
+    --green: #23a55a;
+  }
+
+  html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: var(--black);
+    color: var(--text);
+    font-family: Inter, Arial, Helvetica, sans-serif;
+  }
+
+  /* ---------------- WELCOME ---------------- */
+
+  #welcome {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #000;
+
+    transition: opacity .3s ease;
+  }
+
+  .welcome-inner {
+    text-align: center;
+    position: relative;
+    z-index: 2;
+  }
+
+  #cholo {
+    width: min(480px, 72vw);
+    max-height: 65vh;
+    object-fit: contain;
+
+    cursor: pointer;
+
+    filter:
+      drop-shadow(0 0 8px rgba(255,194,28,.18))
+      drop-shadow(0 0 24px rgba(255,194,28,.08));
+
+    animation: breathe 2.8s ease-in-out infinite;
+
+    transition:
+      transform .5s cubic-bezier(.2,.8,.2,1),
+      filter .35s ease;
+  }
+
+  #cholo:hover {
+    transform: scale(1.035);
+
+    filter:
+      drop-shadow(0 0 10px rgba(255,194,28,.65))
+      drop-shadow(0 0 34px rgba(255,194,28,.28));
+  }
+
+  .welcome-copy {
+    margin-top: 8px;
+    transition: opacity .18s ease;
+  }
+
+  .welcome-copy h1 {
+    margin: 0;
+    color: white;
+    font-size: clamp(28px, 5vw, 52px);
+    letter-spacing: .06em;
+  }
+
+  .welcome-copy p {
+    margin: 9px 0 0;
+    color: var(--yellow);
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+
+    animation: blinkPrompt 1.7s ease-in-out infinite;
+  }
+
+  #welcome.activating .welcome-copy {
+    opacity: 0;
+  }
+
+  #welcome.activating #cholo {
+    animation: none;
+
+    transform: scale(1.7);
+
+    filter:
+      brightness(1.25)
+      drop-shadow(0 0 18px rgba(255,194,28,1))
+      drop-shadow(0 0 60px rgba(255,194,28,.85))
+      drop-shadow(0 0 130px rgba(255,194,28,.45));
+  }
+
+  @keyframes breathe {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.018); }
+  }
+
+  @keyframes blinkPrompt {
+    0%,100% { opacity: .55; }
+    50% { opacity: 1; }
+  }
+
+
+  /* ---------------- PIXELS ---------------- */
+
+  #pixelCanvas {
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+
+    width: 100%;
+    height: 100%;
+
+    pointer-events: none;
+
+    opacity: 0;
+  }
+
+
+  /* ---------------- CHAT REVEAL ---------------- */
+
+  #experience {
+    position: fixed;
+    inset: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 24px;
+
+    background:
+      radial-gradient(
+        circle at center,
+        #141417 0%,
+        #080809 55%,
+        #000 100%
+      );
+
+    opacity: 0;
+    transform: scale(.96);
+
+    transition:
+      opacity .5s ease,
+      transform .5s ease;
+  }
+
+  #experience.visible {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .dialog {
+    width: min(580px, 100%);
+
+    background: var(--panel);
+
+    border: 1px solid #34343a;
+    border-radius: 14px;
+
+    box-shadow:
+      0 30px 100px rgba(0,0,0,.75),
+      0 0 45px rgba(255,194,28,.04);
+
+    overflow: hidden;
+  }
+
+  .dialog-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 15px 18px;
+
+    background: #111113;
+
+    border-bottom: 1px solid #303035;
+  }
+
+  .dialog-avatar {
+    width: 42px;
+    height: 42px;
+
+    border-radius: 50%;
+
+    object-fit: cover;
+
+    background: black;
+
+    border: 1px solid #39393e;
+  }
+
+  .dialog-name {
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: .05em;
+  }
+
+  .dialog-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    margin-top: 4px;
+
+    color: var(--muted);
+    font-size: 11px;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+    background: var(--green);
+  }
+
+  .conversation {
+    padding: 32px 26px 28px;
+  }
+
+  .message {
+    display: flex;
+    gap: 13px;
+  }
+
+  .message-avatar {
+    width: 42px;
+    height: 42px;
+
+    flex: 0 0 42px;
+
+    border-radius: 50%;
+    object-fit: cover;
+
+    background: black;
+  }
+
+  .message-body {
+    flex: 1;
+  }
+
+  .message-meta {
+    margin-bottom: 6px;
+  }
+
+  .message-name {
+    color: var(--yellow);
+
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  .message-text {
+    color: #dedee1;
+
+    font-size: 18px;
+    line-height: 1.55;
+  }
+
+  .message-text strong {
+    color: white;
+  }
+
+  .composer {
+    display: flex;
+
+    margin-top: 28px;
+
+    background: var(--panel2);
+
+    border: 1px solid #37373d;
+    border-radius: 9px;
+
+    overflow: hidden;
+  }
+
+  #visitorAnswer {
+    flex: 1;
+    min-width: 0;
+
+    border: 0;
+    outline: 0;
+
+    padding: 16px;
+
+    background: transparent;
+    color: white;
+
+    font: inherit;
+    font-size: 16px;
+  }
+
+  #visitorAnswer::placeholder {
+    color: #72727a;
+  }
+
+  #sendButton {
+    width: 58px;
+
+    border: 0;
+
+    background: transparent;
+    color: var(--yellow);
+
+    font-size: 22px;
+
+    cursor: pointer;
+  }
+
+  #sendButton:hover {
+    background: rgba(255,255,255,.04);
+  }
+
+
+  /* ---------------- MOBILE ---------------- */
+
+  @media (max-width: 600px) {
+
+    #cholo {
+      width: 82vw;
     }
 
-    :root {
-      --black: #0d0d0f;
-      --panel: #151518;
-      --panel-light: #1c1c20;
-      --input: #232328;
-
-      --text: #f2f2f3;
-      --muted: #98989f;
-      --faint: #68686f;
-
-      --accent: #f2c94c;
-      --green: #23a55a;
+    #experience {
+      padding: 14px;
     }
 
-    html,
-    body {
-      margin: 0;
-      width: 100%;
-      height: 100%;
-    }
-
-    body {
-      background: var(--black);
-      color: var(--text);
-      font-family:
-        Inter,
-        ui-sans-serif,
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-
-      display: flex;
-      justify-content: center;
-    }
-
-    .app {
-      width: 100%;
-      max-width: 1100px;
-      min-height: 100dvh;
-
-      background: var(--panel);
-
-      display: flex;
-      flex-direction: column;
-
-      border-left: 1px solid #242429;
-      border-right: 1px solid #242429;
-    }
-
-    /* HEADER */
-
-    .header {
-      height: 72px;
-      flex: 0 0 72px;
-
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-
-      padding: 0 24px;
-
-      background: #111113;
-      border-bottom: 1px solid #29292e;
-    }
-
-    .identity {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .avatar {
-      width: 42px;
-      height: 42px;
-
-      border-radius: 50%;
-
-      background: var(--accent);
-      color: #111;
-
-      display: grid;
-      place-items: center;
-
-      font-size: 18px;
-      font-weight: 900;
-    }
-
-    .identity-info {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
-
-    .username {
-      font-size: 14px;
-      font-weight: 800;
-      letter-spacing: .06em;
-    }
-
-    .status {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .online {
-      width: 8px;
-      height: 8px;
-
-      background: var(--green);
-      border-radius: 50%;
-    }
-
-    .brand {
-      color: var(--faint);
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: .16em;
-    }
-
-    /* CHAT */
-
-    .chat {
-      flex: 1;
-      overflow-y: auto;
-
-      padding: 30px 0 50px;
-      scroll-behavior: smooth;
-    }
-
-    .system {
-      color: var(--faint);
-
-      font-size: 12px;
-      text-align: center;
-
-      margin: 6px 20px 36px;
-    }
-
-    .message {
-      display: flex;
-      gap: 16px;
-
-      padding: 10px 28px;
-
-      animation: messageIn .2s ease-out;
-    }
-
-    .message:hover {
-      background: rgba(255,255,255,.018);
-    }
-
-    .message-avatar {
-      width: 42px;
-      height: 42px;
-      flex: 0 0 42px;
-
-      border-radius: 50%;
-
-      display: grid;
-      place-items: center;
-
-      font-weight: 900;
-    }
-
-    .cholo-avatar {
-      background: var(--accent);
-      color: #111;
-    }
-
-    .you-avatar {
-      background: #34343b;
-      color: #ddd;
-    }
-
-    .message-content {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .message-meta {
-      display: flex;
-      align-items: baseline;
-      gap: 8px;
-
-      margin-bottom: 5px;
-    }
-
-    .message-name {
-      font-size: 14px;
-      font-weight: 800;
-    }
-
-    .cholo-name {
-      color: var(--accent);
-    }
-
-    .message-time {
-      color: var(--faint);
-      font-size: 11px;
+    .conversation {
+      padding: 26px 18px 22px;
     }
 
     .message-text {
-      color: #dedee1;
-
-      font-size: 16px;
-      line-height: 1.5;
-
-      max-width: 760px;
-
-      white-space: normal;
-      overflow-wrap: anywhere;
-    }
-
-    .message-text strong {
-      color: #fff;
-    }
-
-    /* TYPING */
-
-    .typing {
-      display: none;
-
-      align-items: center;
-      gap: 8px;
-
-      margin-left: 86px;
-      padding: 6px 0 10px;
-
-      color: var(--muted);
-
-      font-size: 12px;
-      font-style: italic;
-    }
-
-    .typing.visible {
-      display: flex;
-    }
-
-    .typing-dots span {
-      display: inline-block;
-      animation: typing 1.1s infinite;
-    }
-
-    .typing-dots span:nth-child(2) {
-      animation-delay: .15s;
-    }
-
-    .typing-dots span:nth-child(3) {
-      animation-delay: .30s;
-    }
-
-    /* COMPOSER */
-
-    .composer-area {
-      flex: 0 0 auto;
-
-      padding: 0 24px 22px;
-
-      background:
-        linear-gradient(
-          to bottom,
-          rgba(21,21,24,0),
-          var(--panel) 24px
-        );
-    }
-
-    .composer {
-      display: flex;
-      align-items: center;
-
-      background: var(--input);
-
-      border: 1px solid #303036;
-      border-radius: 9px;
-
-      overflow: hidden;
-    }
-
-    input {
-      flex: 1;
-      min-width: 0;
-
-      padding: 16px 18px;
-
-      border: 0;
-      outline: 0;
-
-      background: transparent;
-      color: white;
-
-      font-family: inherit;
       font-size: 16px;
     }
 
-    input::placeholder {
-      color: #777780;
-    }
+  }
 
-    button {
-      width: 58px;
-      height: 52px;
-
-      border: 0;
-
-      background: transparent;
-      color: var(--accent);
-
-      font-size: 21px;
-
-      cursor: pointer;
-    }
-
-    button:hover {
-      background: rgba(255,255,255,.04);
-    }
-
-    button:disabled {
-      opacity: .35;
-      cursor: default;
-    }
-
-    .domain {
-      margin-top: 8px;
-
-      color: #4f4f56;
-
-      font-size: 10px;
-      text-align: right;
-
-      letter-spacing: .08em;
-    }
-
-    @keyframes messageIn {
-      from {
-        opacity: 0;
-        transform: translateY(4px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @keyframes typing {
-      0%, 60%, 100% {
-        opacity: .2;
-      }
-
-      30% {
-        opacity: 1;
-      }
-    }
-
-    /* MOBILE */
-
-    @media (max-width: 650px) {
-
-      .app {
-        border: 0;
-      }
-
-      .header {
-        height: 64px;
-        flex-basis: 64px;
-
-        padding: 0 16px;
-      }
-
-      .avatar {
-        width: 38px;
-        height: 38px;
-      }
-
-      .brand {
-        font-size: 10px;
-      }
-
-      .chat {
-        padding-top: 22px;
-      }
-
-      .message {
-        padding: 10px 16px;
-        gap: 12px;
-      }
-
-      .message-avatar {
-        width: 38px;
-        height: 38px;
-        flex-basis: 38px;
-      }
-
-      .message-text {
-        font-size: 15px;
-      }
-
-      .typing {
-        margin-left: 66px;
-      }
-
-      .composer-area {
-        padding: 0 12px 12px;
-      }
-
-      .domain {
-        display: none;
-      }
-    }
-
-  </style>
+</style>
 </head>
+
 
 <body>
 
-  <main class="app">
+<!-- CHAT IS ALREADY UNDER THE CURTAIN -->
 
-    <!-- HEADER -->
+<section id="experience">
 
-    <header class="header">
+  <div class="dialog">
 
-      <div class="identity">
+    <header class="dialog-header">
 
-        <div class="avatar">
-          C
+      <img
+        src="icon.png"
+        class="dialog-avatar"
+        alt="Cholo"
+      >
+
+      <div>
+
+        <div class="dialog-name">
+          CHOLO
         </div>
 
-        <div class="identity-info">
-
-          <div class="username">
-            CHOLO
-          </div>
-
-          <div class="status">
-            <span class="online"></span>
-            Online
-          </div>
-
+        <div class="dialog-status">
+          <span class="status-dot"></span>
+          Online
         </div>
 
-      </div>
-
-      <div class="brand">
-        CHOLOBOTS
       </div>
 
     </header>
 
 
-    <!-- CHAT -->
-
-    <section
-      class="chat"
-      id="chat"
-      aria-live="polite"
-    >
-
-      <div class="system">
-        You started a conversation with Cholo.
-      </div>
-
-
-      <!-- OPENING MESSAGE -->
+    <div class="conversation">
 
       <div class="message">
 
-        <div class="message-avatar cholo-avatar">
-          C
-        </div>
+        <img
+          src="icon.png"
+          class="message-avatar"
+          alt=""
+        >
 
-        <div class="message-content">
+        <div class="message-body">
 
           <div class="message-meta">
-
-            <span class="message-name cholo-name">
+            <span class="message-name">
               CHOLO
             </span>
-
-            <span
-              class="message-time"
-              id="openingTime"
-            ></span>
-
           </div>
 
           <div class="message-text">
+
             <strong>¿Qué onda?</strong><br>
+
             What brings you here today?
+
           </div>
 
         </div>
 
       </div>
 
-
-      <!-- TYPING -->
-
-      <div
-        class="typing"
-        id="typing"
-      >
-
-        <span>
-          Cholo is typing
-        </span>
-
-        <span class="typing-dots">
-          <span>●</span>
-          <span>●</span>
-          <span>●</span>
-        </span>
-
-      </div>
-
-    </section>
-
-
-    <!-- MESSAGE COMPOSER -->
-
-    <footer class="composer-area">
 
       <div class="composer">
 
@@ -546,296 +436,429 @@
           type="text"
           placeholder="Message Cholo..."
           autocomplete="off"
-          maxlength="500"
-          autofocus
         >
 
         <button
           id="sendButton"
-          aria-label="Send message"
+          aria-label="Send"
         >
           ➤
         </button>
 
       </div>
 
-      <div class="domain">
-        cholobot.com
-      </div>
+    </div>
 
-    </footer>
+  </div>
 
-  </main>
+</section>
 
 
-  <script>
+<!-- WELCOME CURTAIN -->
 
-    const chat =
-      document.getElementById("chat");
+<section id="welcome">
 
-    const input =
-      document.getElementById("visitorAnswer");
+  <div class="welcome-inner">
 
-    const sendButton =
-      document.getElementById("sendButton");
+    <img
+      src="icon.png"
+      id="cholo"
+      alt="Cholo"
+    >
 
-    const typing =
-      document.getElementById("typing");
+    <div class="welcome-copy">
 
-    const openingTime =
-      document.getElementById("openingTime");
+      <h1>
+        ¿QUÉ ONDA?
+      </h1>
 
+      <p>
+        Click the Cholo
+      </p>
 
-    let introComplete = false;
+    </div>
 
+  </div>
 
-    function currentTime() {
+</section>
 
-      return new Intl.DateTimeFormat(
-        [],
-        {
-          hour: "numeric",
-          minute: "2-digit"
-        }
-      ).format(new Date());
 
-    }
+<!-- PIXEL EFFECT -->
 
+<canvas id="pixelCanvas"></canvas>
 
-    openingTime.textContent =
-      "Today at " + currentTime();
 
+<script>
 
-    function scrollToBottom() {
+const welcome =
+  document.getElementById("welcome");
 
-      chat.scrollTop =
-        chat.scrollHeight;
+const cholo =
+  document.getElementById("cholo");
 
-    }
+const canvas =
+  document.getElementById("pixelCanvas");
 
+const ctx =
+  canvas.getContext("2d");
 
-    function addVisitorMessage(text) {
+const experience =
+  document.getElementById("experience");
 
-      const message =
-        document.createElement("div");
+const input =
+  document.getElementById("visitorAnswer");
 
-      message.className =
-        "message";
 
+let running = false;
 
-      const avatar =
-        document.createElement("div");
 
-      avatar.className =
-        "message-avatar you-avatar";
+function sizeCanvas() {
 
-      avatar.textContent =
-        "Y";
+  const dpr =
+    window.devicePixelRatio || 1;
 
+  canvas.width =
+    window.innerWidth * dpr;
 
-      const content =
-        document.createElement("div");
+  canvas.height =
+    window.innerHeight * dpr;
 
-      content.className =
-        "message-content";
+  canvas.style.width =
+    window.innerWidth + "px";
 
+  canvas.style.height =
+    window.innerHeight + "px";
 
-      const meta =
-        document.createElement("div");
+  ctx.setTransform(
+    dpr, 0,
+    0, dpr,
+    0, 0
+  );
 
-      meta.className =
-        "message-meta";
+}
 
 
-      const name =
-        document.createElement("span");
+sizeCanvas();
 
-      name.className =
-        "message-name";
+window.addEventListener(
+  "resize",
+  sizeCanvas
+);
 
-      name.textContent =
-        "YOU";
 
+/* CREATE PIXEL PARTICLES FROM THE IMAGE */
 
-      const time =
-        document.createElement("span");
+function createParticles() {
 
-      time.className =
-        "message-time";
+  const rect =
+    cholo.getBoundingClientRect();
 
-      time.textContent =
-        "Today at " + currentTime();
+  const temp =
+    document.createElement("canvas");
 
+  const tempCtx =
+    temp.getContext("2d");
 
-      const textElement =
-        document.createElement("div");
+  const sampleWidth = 180;
 
-      textElement.className =
-        "message-text";
+  const ratio =
+    cholo.naturalHeight /
+    cholo.naturalWidth;
 
-      textElement.textContent =
-        text;
+  temp.width =
+    sampleWidth;
 
-
-      meta.appendChild(name);
-      meta.appendChild(time);
-
-      content.appendChild(meta);
-      content.appendChild(textElement);
-
-      message.appendChild(avatar);
-      message.appendChild(content);
-
-
-      chat.insertBefore(
-        message,
-        typing
-      );
-
-
-      scrollToBottom();
-
-    }
-
-
-    function addCholoMessage(html) {
-
-      const message =
-        document.createElement("div");
-
-      message.className =
-        "message";
-
-
-      message.innerHTML = `
-
-        <div class="message-avatar cholo-avatar">
-          C
-        </div>
-
-        <div class="message-content">
-
-          <div class="message-meta">
-
-            <span class="message-name cholo-name">
-              CHOLO
-            </span>
-
-            <span class="message-time">
-              Today at ${currentTime()}
-            </span>
-
-          </div>
-
-          <div class="message-text">
-            ${html}
-          </div>
-
-        </div>
-
-      `;
-
-
-      chat.insertBefore(
-        message,
-        typing
-      );
-
-
-      scrollToBottom();
-
-    }
-
-
-    function showTyping() {
-
-      typing.classList.add(
-        "visible"
-      );
-
-      scrollToBottom();
-
-    }
-
-
-    function hideTyping() {
-
-      typing.classList.remove(
-        "visible"
-      );
-
-    }
-
-
-    function sendMessage() {
-
-      const text =
-        input.value.trim();
-
-
-      if (!text) {
-        return;
-      }
-
-
-      addVisitorMessage(text);
-
-
-      input.value = "";
-
-      input.disabled = true;
-      sendButton.disabled = true;
-
-
-      showTyping();
-
-
-      setTimeout(() => {
-
-        hideTyping();
-
-
-        if (!introComplete) {
-
-          addCholoMessage(
-            "<strong>¡Órale!</strong><br>" +
-            "Pues let me show you what us Cholobots do."
-          );
-
-          introComplete = true;
-
-        }
-
-
-        input.disabled = false;
-        sendButton.disabled = false;
-
-        input.focus();
-
-
-      }, 1100);
-
-    }
-
-
-    sendButton.addEventListener(
-      "click",
-      sendMessage
+  temp.height =
+    Math.round(
+      sampleWidth * ratio
     );
 
 
-    input.addEventListener(
-      "keydown",
-      function(event) {
+  tempCtx.drawImage(
+    cholo,
+    0,
+    0,
+    temp.width,
+    temp.height
+  );
 
-        if (event.key === "Enter") {
-          sendMessage();
-        }
+
+  const data =
+    tempCtx.getImageData(
+      0,
+      0,
+      temp.width,
+      temp.height
+    );
+
+
+  const particles = [];
+
+  const step = 3;
+
+
+  for (
+    let y = 0;
+    y < temp.height;
+    y += step
+  ) {
+
+    for (
+      let x = 0;
+      x < temp.width;
+      x += step
+    ) {
+
+      const index =
+        (y * temp.width + x) * 4;
+
+      const alpha =
+        data.data[index + 3];
+
+
+      if (alpha < 40) {
+        continue;
+      }
+
+
+      const r =
+        data.data[index];
+
+      const g =
+        data.data[index + 1];
+
+      const b =
+        data.data[index + 2];
+
+
+      particles.push({
+
+        x:
+          rect.left +
+          (x / temp.width) *
+          rect.width,
+
+        y:
+          rect.top +
+          (y / temp.height) *
+          rect.height,
+
+        size:
+          Math.max(
+            3,
+            rect.width /
+            temp.width *
+            step
+          ),
+
+        r,
+        g,
+        b,
+
+        alpha:
+          alpha / 255,
+
+        vx:
+          (Math.random() - .5) *
+          8,
+
+        vy:
+          (Math.random() - .5) *
+          6,
+
+        rotation:
+          Math.random() *
+          Math.PI,
+
+        vr:
+          (Math.random() - .5) *
+          .12
+
+      });
+
+    }
+
+  }
+
+
+  return particles;
+
+}
+
+
+/* RUN THE DISSOLVE */
+
+function dissolve() {
+
+  const particles =
+    createParticles();
+
+  canvas.style.opacity = "1";
+
+  cholo.style.opacity = "0";
+
+
+  let start = null;
+
+  const duration = 850;
+
+
+  function frame(timestamp) {
+
+    if (!start) {
+      start = timestamp;
+    }
+
+
+    const elapsed =
+      timestamp - start;
+
+    const progress =
+      Math.min(
+        elapsed / duration,
+        1
+      );
+
+
+    ctx.clearRect(
+      0,
+      0,
+      window.innerWidth,
+      window.innerHeight
+    );
+
+
+    particles.forEach(
+      particle => {
+
+        const spread =
+          progress * progress;
+
+
+        particle.x +=
+          particle.vx *
+          (1 + spread * 2);
+
+        particle.y +=
+          particle.vy *
+          (1 + spread * 1.5);
+
+        particle.rotation +=
+          particle.vr;
+
+
+        const fade =
+          1 - progress;
+
+
+        ctx.save();
+
+        ctx.globalAlpha =
+          particle.alpha * fade;
+
+        ctx.translate(
+          particle.x,
+          particle.y
+        );
+
+        ctx.rotate(
+          particle.rotation
+        );
+
+        ctx.fillStyle =
+          `rgb(
+            ${particle.r},
+            ${particle.g},
+            ${particle.b}
+          )`;
+
+
+        ctx.fillRect(
+          -particle.size / 2,
+          -particle.size / 2,
+          particle.size,
+          particle.size
+        );
+
+        ctx.restore();
 
       }
     );
 
-  </script>
+
+    if (progress < 1) {
+
+      requestAnimationFrame(
+        frame
+      );
+
+    }
+
+    else {
+
+      canvas.style.opacity =
+        "0";
+
+      welcome.style.display =
+        "none";
+
+      input.focus();
+
+    }
+
+  }
+
+
+  requestAnimationFrame(
+    frame
+  );
+
+}
+
+
+/* CLICK CHOLO */
+
+cholo.addEventListener(
+  "click",
+  function() {
+
+    if (running) {
+      return;
+    }
+
+    running = true;
+
+
+    welcome.classList.add(
+      "activating"
+    );
+
+
+    /* Reveal the dialog underneath */
+
+    setTimeout(
+      () => {
+
+        experience.classList.add(
+          "visible"
+        );
+
+      },
+      300
+    );
+
+
+    /* Then break Cholo apart */
+
+    setTimeout(
+      dissolve,
+      520
+    );
+
+  }
+);
+
+</script>
 
 </body>
 </html>
