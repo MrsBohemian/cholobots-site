@@ -489,6 +489,78 @@
       opacity: 0;
     }
 
+    /* ==================================================
+   LIVE CONVERSATION
+   ================================================== */
+
+.message + .message {
+  margin-top: 30px;
+}
+
+.visitor-message {
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.visitor-name {
+  color: #a9a9b0;
+
+  font-size: 16px;
+  font-weight: 800;
+
+  letter-spacing: .05em;
+}
+
+.visitor-text {
+  color: white;
+
+  font-size: 26px;
+  line-height: 1.4;
+}
+
+.typing-dots {
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+
+  height: 34px;
+}
+
+.typing-dots span {
+  width: 8px;
+  height: 8px;
+
+  border-radius: 50%;
+
+  background: var(--yellow);
+
+  animation:
+    typingBounce 1s infinite ease-in-out;
+}
+
+.typing-dots span:nth-child(2) {
+  animation-delay: .15s;
+}
+
+.typing-dots span:nth-child(3) {
+  animation-delay: .3s;
+}
+
+@keyframes typingBounce {
+
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: .45;
+  }
+
+  30% {
+    transform: translateY(-6px);
+    opacity: 1;
+  }
+}
 
     /* ==================================================
        MOBILE
@@ -1154,23 +1226,178 @@
       Next step: Cholo actually responds.
     */
 
-    sendButton.addEventListener(
-      "click",
-      () => {
+    /* ==================================================
+   CONVERSATION
+   ================================================== */
 
-        const answer =
-          input.value.trim();
+function addVisitorMessage(text) {
 
-        if (!answer) {
-          return;
-        }
+  const message =
+    document.createElement("div");
 
-        console.log(
-          "Visitor said:",
-          answer
-        );
-      }
-    );
+  message.className = "message visitor-message";
+
+  message.innerHTML = `
+    <div class="message-body">
+
+      <div class="message-meta">
+        <span class="visitor-name">
+          YOU
+        </span>
+      </div>
+
+      <div class="visitor-text"></div>
+
+    </div>
+  `;
+
+  message.querySelector(".visitor-text")
+    .textContent = text;
+
+  const composer =
+    document.querySelector(".composer");
+
+  composer.before(message);
+}
+
+
+function addTypingIndicator() {
+
+  const typing =
+    document.createElement("div");
+
+  typing.className =
+    "message cholo-typing";
+
+  typing.innerHTML = `
+    <img
+      src="icon.png"
+      class="message-avatar"
+      alt=""
+    >
+
+    <div class="message-body">
+
+      <div class="message-meta">
+
+        <span class="message-name">
+          CHOLO
+        </span>
+
+      </div>
+
+      <div class="typing-dots">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+
+    </div>
+  `;
+
+  const composer =
+    document.querySelector(".composer");
+
+  composer.before(typing);
+
+  return typing;
+}
+
+
+function addCholoMessage(text) {
+
+  const message =
+    document.createElement("div");
+
+  message.className = "message";
+
+  message.innerHTML = `
+    <img
+      src="icon.png"
+      class="message-avatar"
+      alt=""
+    >
+
+    <div class="message-body">
+
+      <div class="message-meta">
+
+        <span class="message-name">
+          CHOLO
+        </span>
+
+      </div>
+
+      <div class="message-text"></div>
+
+    </div>
+  `;
+
+  message.querySelector(".message-text")
+    .textContent = text;
+
+  const composer =
+    document.querySelector(".composer");
+
+  composer.before(message);
+}
+
+
+function handleVisitorAnswer() {
+
+  const answer =
+    input.value.trim();
+
+  if (!answer) {
+    return;
+  }
+
+
+  addVisitorMessage(answer);
+
+  input.value = "";
+
+  input.disabled = true;
+
+  sendButton.disabled = true;
+
+
+  const typing =
+    addTypingIndicator();
+
+
+  /*
+    Temporary response.
+
+    Next step:
+    replace this with Cholo's actual AI response.
+  */
+
+  setTimeout(
+    () => {
+
+      typing.remove();
+
+      addCholoMessage(
+        "¡Órale! Pues come on — let me show you what us Cholobots do."
+      );
+
+      input.disabled = false;
+
+      sendButton.disabled = false;
+
+      input.focus();
+
+    },
+    900
+  );
+}
+
+
+sendButton.addEventListener(
+  "click",
+  handleVisitorAnswer
+);
 
   </script>
 
