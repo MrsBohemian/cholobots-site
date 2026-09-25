@@ -1,815 +1,1179 @@
 <!DOCTYPE html>
 <html lang="en" translate="no">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="google" content="notranslate">
-<meta name="theme-color" content="#000000">
+  <meta charset="UTF-8">
 
-<title>Cholobots</title>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-<style>
-  * { box-sizing: border-box; }
+  <!-- Keep Cholo's Spanglish intact -->
+  <meta name="google" content="notranslate">
 
-  :root {
-    --black: #050505;
-    --panel: #17171a;
-    --panel2: #202024;
-    --text: #f1f1f2;
-    --muted: #96969d;
-    --yellow: #ffc21c;
-    --green: #23a55a;
-  }
+  <meta name="theme-color" content="#000000">
 
-  html, body {
-    margin: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background: var(--black);
-    color: var(--text);
-    font-family: Inter, Arial, Helvetica, sans-serif;
-  }
+  <title>Cholobots</title>
 
-  /* ---------------- WELCOME ---------------- */
+  <style>
 
-  #welcome {
-    position: fixed;
-    inset: 0;
-    z-index: 20;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    background: #000;
-
-    transition: opacity .3s ease;
-  }
-
-  .welcome-inner {
-    text-align: center;
-    position: relative;
-    z-index: 2;
-  }
-
-  #cholo {
-    width: min(480px, 72vw);
-    max-height: 65vh;
-    object-fit: contain;
-
-    cursor: pointer;
-
-    filter:
-      drop-shadow(0 0 8px rgba(255,194,28,.18))
-      drop-shadow(0 0 24px rgba(255,194,28,.08));
-
-    animation: breathe 2.8s ease-in-out infinite;
-
-    transition:
-      transform .5s cubic-bezier(.2,.8,.2,1),
-      filter .35s ease;
-  }
-
-  #cholo:hover {
-    transform: scale(1.035);
-
-    filter:
-      drop-shadow(0 0 10px rgba(255,194,28,.65))
-      drop-shadow(0 0 34px rgba(255,194,28,.28));
-  }
-
-  .welcome-copy {
-    margin-top: 8px;
-    transition: opacity .18s ease;
-  }
-
-  .welcome-copy h1 {
-   margin: 0;
-   color: white;
-   font-size: clamp(52px, 8vw, 86px);
-   letter-spacing: .06em;
- }
- 
- .welcome-copy p {
-   margin: 14px 0 0;
-   color: var(--yellow);
-   font-size: clamp(18px, 2.5vw, 26px);
-   font-weight: 800;
-   letter-spacing: .18em;
-   text-transform: uppercase;
- 
-   animation: blinkPrompt 1.7s ease-in-out infinite;
- }
-
-  #welcome.activating .welcome-copy {
-    opacity: 0;
-  }
-
-  #welcome.activating #cholo {
-    animation: none;
-
-    transform: scale(1.7);
-
-    filter:
-      brightness(1.25)
-      drop-shadow(0 0 18px rgba(255,194,28,1))
-      drop-shadow(0 0 60px rgba(255,194,28,.85))
-      drop-shadow(0 0 130px rgba(255,194,28,.45));
-  }
-
-  @keyframes breathe {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.018); }
-  }
-
-  @keyframes blinkPrompt {
-    0%,100% { opacity: .55; }
-    50% { opacity: 1; }
-  }
-
-
-  /* ---------------- PIXELS ---------------- */
-
-  #pixelCanvas {
-    position: fixed;
-    inset: 0;
-    z-index: 30;
-
-    width: 100%;
-    height: 100%;
-
-    pointer-events: none;
-
-    opacity: 0;
-  }
-
-
-  /* ---------------- CHAT REVEAL ---------------- */
-
-  #experience {
-    position: fixed;
-    inset: 0;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: 24px;
-
-    background:
-      radial-gradient(
-        circle at center,
-        #141417 0%,
-        #080809 55%,
-        #000 100%
-      );
-
-    opacity: 0;
-    transform: scale(.96);
-
-    transition:
-      opacity .5s ease,
-      transform .5s ease;
-  }
-
-  #experience.visible {
-    opacity: 1;
-    transform: scale(1);
-  }
-
-  .dialog {
-    width: min(760px, 100%);
-
-    background: var(--panel);
-
-    border: 1px solid #34343a;
-    border-radius: 14px;
-
-    box-shadow:
-      0 30px 100px rgba(0,0,0,.75),
-      0 0 45px rgba(255,194,28,.04);
-
-    overflow: hidden;
-  }
-
-  .dialog-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-
-    padding: 15px 18px;
-
-    background: #111113;
-
-    border-bottom: 1px solid #303035;
-  }
-
-  .dialog-avatar {
-    width: 42px;
-    height: 42px;
-
-    border-radius: 50%;
-
-    object-fit: cover;
-
-    background: black;
-
-    border: 1px solid #39393e;
-  }
-
-  .dialog-name {
-  font-size: 22px;
-  font-weight: 800;
-  letter-spacing: .05em;
-}
-
-.dialog-status {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
-  margin-top: 5px;
-
-  color: var(--muted);
-  font-size: 16px;
-}
-
-.message-name {
-  color: var(--yellow);
-
-  font-size: 20px;
-  font-weight: 800;
-}
-
-.message-text {
-  color: #dedee1;
-
-  font-size: 34px;
-  line-height: 1.35;
-}
-
-#visitorAnswer {
-  flex: 1;
-  min-width: 0;
-
-  border: 0;
-  outline: 0;
-
-  padding: 20px;
-
-  background: transparent;
-  color: white;
-
-  font: inherit;
-  font-size: 22px;
-}
-
-  #visitorAnswer::placeholder {
-    color: #72727a;
-  }
-
-  #sendButton {
-    width: 58px;
-
-    border: 0;
-
-    background: transparent;
-    color: var(--yellow);
-
-    font-size: 22px;
-
-    cursor: pointer;
-  }
-
-  #sendButton:hover {
-    background: rgba(255,255,255,.04);
-  }
-
-
-  /* ---------------- MOBILE ---------------- */
-
-  @media (max-width: 600px) {
-
-    #cholo {
-      width: 82vw;
+    * {
+      box-sizing: border-box;
     }
+
+    :root {
+      --black: #050505;
+      --panel: #17171a;
+      --panel-dark: #111113;
+      --text: #f1f1f2;
+      --muted: #96969d;
+      --yellow: #ffc21c;
+      --green: #23a55a;
+    }
+
+    html,
+    body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+
+      background: var(--black);
+      color: var(--text);
+
+      font-family:
+        Inter,
+        Arial,
+        Helvetica,
+        sans-serif;
+    }
+
+
+    /* ==================================================
+       EXPERIENCE UNDER THE WELCOME SCREEN
+       ================================================== */
 
     #experience {
-      padding: 14px;
+      position: fixed;
+      inset: 0;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      padding: 24px;
+
+      background:
+        radial-gradient(
+          circle at center,
+          #151518 0%,
+          #080809 58%,
+          #000 100%
+        );
+
+      opacity: 0;
+      transform: scale(.96);
+
+      transition:
+        opacity .5s ease,
+        transform .5s ease;
     }
 
+    #experience.visible {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+
+    /* ==================================================
+       DIALOG
+       ================================================== */
+
+    .dialog {
+      width: min(760px, 100%);
+
+      overflow: hidden;
+
+      background: var(--panel);
+
+      border: 1px solid #34343a;
+      border-radius: 16px;
+
+      box-shadow:
+        0 30px 100px rgba(0, 0, 0, .8),
+        0 0 55px rgba(255, 194, 28, .04);
+    }
+
+
+    /* HEADER */
+
+    .dialog-header {
+      display: flex;
+      align-items: center;
+
+      gap: 14px;
+
+      padding: 18px 22px;
+
+      background: var(--panel-dark);
+
+      border-bottom: 1px solid #303035;
+    }
+
+    .dialog-avatar {
+      width: 52px;
+      height: 52px;
+
+      object-fit: cover;
+
+      border-radius: 50%;
+      border: 1px solid #3b3b40;
+
+      background: #000;
+    }
+
+    .dialog-name {
+      font-size: 22px;
+      font-weight: 800;
+
+      letter-spacing: .05em;
+    }
+
+    .dialog-status {
+      display: flex;
+      align-items: center;
+
+      gap: 7px;
+
+      margin-top: 4px;
+
+      color: var(--muted);
+
+      font-size: 15px;
+    }
+
+    .status-dot {
+      width: 9px;
+      height: 9px;
+
+      border-radius: 50%;
+
+      background: var(--green);
+
+      box-shadow:
+        0 0 8px rgba(35, 165, 90, .5);
+    }
+
+
+    /* CONVERSATION */
+
     .conversation {
-      padding: 44px 36px 36px;
+      padding: 42px 38px 36px;
+    }
+
+    .message {
+      display: flex;
+      align-items: flex-start;
+
+      gap: 18px;
+    }
+
+    .message-avatar {
+      width: 58px;
+      height: 58px;
+
+      flex: 0 0 auto;
+
+      object-fit: cover;
+
+      border-radius: 50%;
+
+      background: #000;
+    }
+
+    .message-body {
+      min-width: 0;
+    }
+
+    .message-meta {
+      margin-bottom: 8px;
+    }
+
+    .message-name {
+      color: var(--yellow);
+
+      font-size: 20px;
+      font-weight: 800;
+
+      letter-spacing: .04em;
     }
 
     .message-text {
-     font-size: 26px;
-   }
-   
-   #visitorAnswer {
-     font-size: 18px;
-   }
+      color: #dedee1;
 
-  }
+      font-size: 34px;
+      line-height: 1.35;
+    }
 
-</style>
+
+    /* COMPOSER */
+
+    .composer {
+      display: flex;
+      align-items: stretch;
+
+      margin-top: 34px;
+
+      overflow: hidden;
+
+      background: #242429;
+
+      border: 1px solid #36363c;
+      border-radius: 12px;
+
+      transition:
+        border-color .2s ease,
+        box-shadow .2s ease;
+    }
+
+    .composer:focus-within {
+      border-color: rgba(255, 194, 28, .65);
+
+      box-shadow:
+        0 0 0 3px rgba(255, 194, 28, .08);
+    }
+
+    #visitorAnswer {
+      flex: 1;
+      min-width: 0;
+
+      padding: 20px;
+
+      border: 0;
+      outline: 0;
+
+      background: transparent;
+      color: white;
+
+      font: inherit;
+      font-size: 22px;
+    }
+
+    #visitorAnswer::placeholder {
+      color: #777780;
+    }
+
+    #sendButton {
+      width: 68px;
+
+      border: 0;
+
+      background: transparent;
+      color: var(--yellow);
+
+      font-size: 26px;
+
+      cursor: pointer;
+
+      transition:
+        background .15s ease,
+        transform .15s ease;
+    }
+
+    #sendButton:hover {
+      background: rgba(255, 255, 255, .04);
+    }
+
+    #sendButton:active {
+      transform: scale(.9);
+    }
+
+
+    /* ==================================================
+       WELCOME CURTAIN
+       ================================================== */
+
+    #welcome {
+      position: fixed;
+      inset: 0;
+
+      z-index: 20;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      background: #000;
+
+      transition: opacity .3s ease;
+    }
+
+    .welcome-inner {
+      position: relative;
+
+      z-index: 2;
+
+      text-align: center;
+    }
+
+
+    /* CHOLO */
+
+    #cholo {
+      display: block;
+
+      width: min(480px, 72vw);
+      max-height: 62vh;
+
+      margin: 0 auto;
+
+      object-fit: contain;
+
+      cursor: pointer;
+
+      filter:
+        drop-shadow(
+          0 0 8px
+          rgba(255, 194, 28, .18)
+        )
+        drop-shadow(
+          0 0 24px
+          rgba(255, 194, 28, .08)
+        );
+
+      animation:
+        breathe 2.8s ease-in-out infinite;
+
+      transition:
+        transform .5s cubic-bezier(.2, .8, .2, 1),
+        filter .35s ease,
+        opacity .1s linear;
+    }
+
+    #cholo:hover {
+      transform: scale(1.04);
+
+      filter:
+        drop-shadow(
+          0 0 12px
+          rgba(255, 194, 28, .7)
+        )
+        drop-shadow(
+          0 0 38px
+          rgba(255, 194, 28, .3)
+        );
+    }
+
+
+    /* WELCOME COPY */
+
+    .welcome-copy {
+      margin-top: 4px;
+
+      transition:
+        opacity .18s ease,
+        transform .18s ease;
+    }
+
+    .welcome-copy h1 {
+      margin: 0;
+
+      color: white;
+
+      font-size:
+        clamp(52px, 8vw, 86px);
+
+      line-height: .95;
+
+      letter-spacing: .055em;
+    }
+
+    .welcome-copy p {
+      margin: 18px 0 0;
+
+      color: var(--yellow);
+
+      font-size:
+        clamp(18px, 2.5vw, 26px);
+
+      font-weight: 800;
+
+      letter-spacing: .18em;
+
+      text-transform: uppercase;
+
+      animation:
+        blinkPrompt 1.7s ease-in-out infinite;
+    }
+
+
+    /* ACTIVATION */
+
+    #welcome.activating
+    .welcome-copy {
+      opacity: 0;
+
+      transform:
+        translateY(10px);
+    }
+
+    #welcome.activating
+    #cholo {
+      animation: none;
+
+      transform: scale(1.7);
+
+      filter:
+        brightness(1.3)
+
+        drop-shadow(
+          0 0 18px
+          rgba(255, 194, 28, 1)
+        )
+
+        drop-shadow(
+          0 0 60px
+          rgba(255, 194, 28, .85)
+        )
+
+        drop-shadow(
+          0 0 130px
+          rgba(255, 194, 28, .45)
+        );
+    }
+
+
+    /* ANIMATIONS */
+
+    @keyframes breathe {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.018);
+      }
+    }
+
+    @keyframes blinkPrompt {
+
+      0%,
+      100% {
+        opacity: .55;
+      }
+
+      50% {
+        opacity: 1;
+      }
+    }
+
+
+    /* ==================================================
+       PIXEL DISSOLVE CANVAS
+       ================================================== */
+
+    #pixelCanvas {
+      position: fixed;
+      inset: 0;
+
+      z-index: 30;
+
+      width: 100%;
+      height: 100%;
+
+      pointer-events: none;
+
+      opacity: 0;
+    }
+
+
+    /* ==================================================
+       MOBILE
+       ================================================== */
+
+    @media (max-width: 600px) {
+
+      #experience {
+        padding: 14px;
+      }
+
+      #cholo {
+        width: 82vw;
+        max-height: 56vh;
+      }
+
+      .welcome-copy h1 {
+        font-size:
+          clamp(46px, 15vw, 70px);
+      }
+
+      .welcome-copy p {
+        font-size:
+          clamp(17px, 5vw, 22px);
+
+        margin-top: 15px;
+      }
+
+      .dialog-header {
+        padding: 14px 16px;
+      }
+
+      .dialog-avatar {
+        width: 44px;
+        height: 44px;
+      }
+
+      .dialog-name {
+        font-size: 19px;
+      }
+
+      .dialog-status {
+        font-size: 13px;
+      }
+
+      .conversation {
+        padding: 30px 22px 24px;
+      }
+
+      .message {
+        gap: 13px;
+      }
+
+      .message-avatar {
+        width: 46px;
+        height: 46px;
+      }
+
+      .message-name {
+        font-size: 17px;
+      }
+
+      .message-text {
+        font-size: 26px;
+      }
+
+      .composer {
+        margin-top: 28px;
+      }
+
+      #visitorAnswer {
+        padding: 17px;
+
+        font-size: 18px;
+      }
+
+      #sendButton {
+        width: 56px;
+
+        font-size: 22px;
+      }
+    }
+
+  </style>
 </head>
 
 
 <body class="notranslate">
 
-<!-- CHAT IS ALREADY UNDER THE CURTAIN -->
 
-<section id="experience">
+  <!-- ==================================================
+       DIALOG EXPERIENCE
+       This already exists behind the welcome curtain.
+       ================================================== -->
 
-  <div class="dialog">
+  <section id="experience">
 
-    <header class="dialog-header">
+    <div class="dialog">
 
-      <img
-        src="icon.png"
-        class="dialog-avatar"
-        alt="Cholo"
-      >
-
-      <div>
-
-        <div class="dialog-name">
-          CHOLO
-        </div>
-
-        <div class="dialog-status">
-          <span class="status-dot"></span>
-          Online
-        </div>
-
-      </div>
-
-    </header>
-
-
-    <div class="conversation">
-
-      <div class="message">
+      <header class="dialog-header">
 
         <img
           src="icon.png"
-          class="message-avatar"
-          alt=""
+          class="dialog-avatar"
+          alt="Cholo"
         >
 
-        <div class="message-body">
+        <div>
 
-          <div class="message-meta">
-            <span class="message-name">
-              CHOLO
-            </span>
+          <div class="dialog-name">
+            CHOLO
           </div>
 
-          <div class="message-text">
+          <div class="dialog-status">
 
-            <strong>¿Qué onda?</strong><br>
+            <span class="status-dot"></span>
 
-            What brings you here today?
+            Online
 
           </div>
 
         </div>
 
-      </div>
+      </header>
 
 
-      <div class="composer">
+      <div class="conversation">
 
-        <input
-          id="visitorAnswer"
-          type="text"
-          placeholder="Message Cholo..."
-          autocomplete="off"
-        >
+        <div class="message">
 
-        <button
-          id="sendButton"
-          aria-label="Send"
-        >
-          ➤
-        </button>
+          <img
+            src="icon.png"
+            class="message-avatar"
+            alt=""
+          >
+
+          <div class="message-body">
+
+            <div class="message-meta">
+
+              <span class="message-name">
+                CHOLO
+              </span>
+
+            </div>
+
+            <div class="message-text">
+
+              <strong
+                lang="es"
+                translate="no"
+              >
+                ¿Qué onda?
+              </strong>
+
+              <br>
+
+              What brings you here today?
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="composer">
+
+          <input
+            id="visitorAnswer"
+            type="text"
+            placeholder="Message Cholo..."
+            autocomplete="off"
+          >
+
+          <button
+            id="sendButton"
+            type="button"
+            aria-label="Send"
+          >
+            ➤
+          </button>
+
+        </div>
 
       </div>
 
     </div>
 
-  </div>
-
-</section>
+  </section>
 
 
-<!-- WELCOME CURTAIN -->
 
-<section id="welcome">
+  <!-- ==================================================
+       WELCOME
+       ================================================== -->
 
-  <div class="welcome-inner">
+  <section id="welcome">
 
-    <img
-      src="icon.png"
-      id="cholo"
-      alt="Cholo"
-    >
+    <div class="welcome-inner">
 
-    <div class="welcome-copy">
+      <img
+        src="icon.png"
+        id="cholo"
+        alt="Cholo"
+      >
 
-      <h1>
-        ¿QUÉ ONDA?
-      </h1>
+      <div class="welcome-copy">
 
-      <p>
-        Click the Cholo
-      </p>
+        <h1
+          lang="es"
+          translate="no"
+        >
+          ¿QUÉ ONDA?
+        </h1>
+
+        <p>
+          Click the Cholo
+        </p>
+
+      </div>
 
     </div>
 
-  </div>
+  </section>
 
-</section>
 
 
-<!-- PIXEL EFFECT -->
+  <!-- Pixel dissolve layer -->
 
-<canvas id="pixelCanvas"></canvas>
+  <canvas id="pixelCanvas"></canvas>
 
 
-<script>
 
-const welcome =
-  document.getElementById("welcome");
+  <script>
 
-const cholo =
-  document.getElementById("cholo");
+    const welcome =
+      document.getElementById("welcome");
 
-const canvas =
-  document.getElementById("pixelCanvas");
+    const cholo =
+      document.getElementById("cholo");
 
-const ctx =
-  canvas.getContext("2d");
+    const canvas =
+      document.getElementById("pixelCanvas");
 
-const experience =
-  document.getElementById("experience");
+    const ctx =
+      canvas.getContext("2d");
 
-const input =
-  document.getElementById("visitorAnswer");
+    const experience =
+      document.getElementById("experience");
 
+    const input =
+      document.getElementById("visitorAnswer");
 
-let running = false;
+    const sendButton =
+      document.getElementById("sendButton");
 
 
-function sizeCanvas() {
+    let running = false;
 
-  const dpr =
-    window.devicePixelRatio || 1;
 
-  canvas.width =
-    window.innerWidth * dpr;
 
-  canvas.height =
-    window.innerHeight * dpr;
+    /* ==================================================
+       CANVAS SIZE
+       ================================================== */
 
-  canvas.style.width =
-    window.innerWidth + "px";
+    function sizeCanvas() {
 
-  canvas.style.height =
-    window.innerHeight + "px";
+      const dpr =
+        window.devicePixelRatio || 1;
 
-  ctx.setTransform(
-    dpr, 0,
-    0, dpr,
-    0, 0
-  );
+      canvas.width =
+        window.innerWidth * dpr;
 
-}
+      canvas.height =
+        window.innerHeight * dpr;
 
+      canvas.style.width =
+        window.innerWidth + "px";
 
-sizeCanvas();
+      canvas.style.height =
+        window.innerHeight + "px";
 
-window.addEventListener(
-  "resize",
-  sizeCanvas
-);
 
-
-/* CREATE PIXEL PARTICLES FROM THE IMAGE */
-
-function createParticles() {
-
-  const rect =
-    cholo.getBoundingClientRect();
-
-  const temp =
-    document.createElement("canvas");
-
-  const tempCtx =
-    temp.getContext("2d");
-
-  const sampleWidth = 180;
-
-  const ratio =
-    cholo.naturalHeight /
-    cholo.naturalWidth;
-
-  temp.width =
-    sampleWidth;
-
-  temp.height =
-    Math.round(
-      sampleWidth * ratio
-    );
-
-
-  tempCtx.drawImage(
-    cholo,
-    0,
-    0,
-    temp.width,
-    temp.height
-  );
-
-
-  const data =
-    tempCtx.getImageData(
-      0,
-      0,
-      temp.width,
-      temp.height
-    );
-
-
-  const particles = [];
-
-  const step = 3;
-
-
-  for (
-    let y = 0;
-    y < temp.height;
-    y += step
-  ) {
-
-    for (
-      let x = 0;
-      x < temp.width;
-      x += step
-    ) {
-
-      const index =
-        (y * temp.width + x) * 4;
-
-      const alpha =
-        data.data[index + 3];
-
-
-      if (alpha < 40) {
-        continue;
-      }
-
-
-      const r =
-        data.data[index];
-
-      const g =
-        data.data[index + 1];
-
-      const b =
-        data.data[index + 2];
-
-
-      particles.push({
-
-        x:
-          rect.left +
-          (x / temp.width) *
-          rect.width,
-
-        y:
-          rect.top +
-          (y / temp.height) *
-          rect.height,
-
-        size:
-          Math.max(
-            3,
-            rect.width /
-            temp.width *
-            step
-          ),
-
-        r,
-        g,
-        b,
-
-        alpha:
-          alpha / 255,
-
-        vx:
-          (Math.random() - .5) *
-          8,
-
-        vy:
-          (Math.random() - .5) *
-          6,
-
-        rotation:
-          Math.random() *
-          Math.PI,
-
-        vr:
-          (Math.random() - .5) *
-          .12
-
-      });
-
-    }
-
-  }
-
-
-  return particles;
-
-}
-
-
-/* RUN THE DISSOLVE */
-
-function dissolve() {
-
-  const particles =
-    createParticles();
-
-  canvas.style.opacity = "1";
-
-  cholo.style.opacity = "0";
-
-
-  let start = null;
-
-  const duration = 850;
-
-
-  function frame(timestamp) {
-
-    if (!start) {
-      start = timestamp;
+      ctx.setTransform(
+        dpr,
+        0,
+        0,
+        dpr,
+        0,
+        0
+      );
     }
 
 
-    const elapsed =
-      timestamp - start;
+    sizeCanvas();
 
-    const progress =
-      Math.min(
-        elapsed / duration,
-        1
+
+    window.addEventListener(
+      "resize",
+      sizeCanvas
+    );
+
+
+
+    /* ==================================================
+       BUILD PIXEL PARTICLES
+       ================================================== */
+
+    function createParticles() {
+
+      const rect =
+        cholo.getBoundingClientRect();
+
+
+      const temp =
+        document.createElement("canvas");
+
+      const tempCtx =
+        temp.getContext("2d");
+
+
+      const sampleWidth = 180;
+
+      const ratio =
+        cholo.naturalHeight /
+        cholo.naturalWidth;
+
+
+      temp.width =
+        sampleWidth;
+
+      temp.height =
+        Math.round(
+          sampleWidth * ratio
+        );
+
+
+      tempCtx.drawImage(
+        cholo,
+        0,
+        0,
+        temp.width,
+        temp.height
       );
 
 
-    ctx.clearRect(
-      0,
-      0,
-      window.innerWidth,
-      window.innerHeight
-    );
-
-
-    particles.forEach(
-      particle => {
-
-        const spread =
-          progress * progress;
-
-
-        particle.x +=
-          particle.vx *
-          (1 + spread * 2);
-
-        particle.y +=
-          particle.vy *
-          (1 + spread * 1.5);
-
-        particle.rotation +=
-          particle.vr;
-
-
-        const fade =
-          1 - progress;
-
-
-        ctx.save();
-
-        ctx.globalAlpha =
-          particle.alpha * fade;
-
-        ctx.translate(
-          particle.x,
-          particle.y
+      const imageData =
+        tempCtx.getImageData(
+          0,
+          0,
+          temp.width,
+          temp.height
         );
 
-        ctx.rotate(
-          particle.rotation
-        );
 
-        ctx.fillStyle =
-          `rgb(
-            ${particle.r},
-            ${particle.g},
-            ${particle.b}
-          )`;
+      const data =
+        imageData.data;
 
 
-        ctx.fillRect(
-          -particle.size / 2,
-          -particle.size / 2,
-          particle.size,
-          particle.size
-        );
+      const particles = [];
 
-        ctx.restore();
+      const step = 3;
 
+
+      for (
+        let y = 0;
+        y < temp.height;
+        y += step
+      ) {
+
+        for (
+          let x = 0;
+          x < temp.width;
+          x += step
+        ) {
+
+          const index =
+            (y * temp.width + x) * 4;
+
+
+          const r =
+            data[index];
+
+          const g =
+            data[index + 1];
+
+          const b =
+            data[index + 2];
+
+          const alpha =
+            data[index + 3];
+
+
+          if (alpha < 40) {
+            continue;
+          }
+
+
+          particles.push({
+
+            x:
+              rect.left +
+              (x / temp.width) *
+              rect.width,
+
+            y:
+              rect.top +
+              (y / temp.height) *
+              rect.height,
+
+            size:
+              Math.max(
+                3,
+                rect.width /
+                temp.width *
+                step
+              ),
+
+            r,
+            g,
+            b,
+
+            alpha:
+              alpha / 255,
+
+            vx:
+              (Math.random() - .5) *
+              8,
+
+            vy:
+              (Math.random() - .5) *
+              6,
+
+            rotation:
+              Math.random() *
+              Math.PI,
+
+            vr:
+              (Math.random() - .5) *
+              .12
+          });
+
+        }
       }
-    );
 
 
-    if (progress < 1) {
+      return particles;
+    }
+
+
+
+    /* ==================================================
+       DISSOLVE
+       ================================================== */
+
+    function dissolve() {
+
+      const particles =
+        createParticles();
+
+
+      canvas.style.opacity = "1";
+
+      cholo.style.opacity = "0";
+
+
+      let start = null;
+
+      const duration = 850;
+
+
+      function frame(timestamp) {
+
+        if (!start) {
+          start = timestamp;
+        }
+
+
+        const elapsed =
+          timestamp - start;
+
+        const progress =
+          Math.min(
+            elapsed / duration,
+            1
+          );
+
+
+        ctx.clearRect(
+          0,
+          0,
+          window.innerWidth,
+          window.innerHeight
+        );
+
+
+        particles.forEach(
+          particle => {
+
+            const spread =
+              progress * progress;
+
+
+            particle.x +=
+              particle.vx *
+              (1 + spread * 2);
+
+            particle.y +=
+              particle.vy *
+              (1 + spread * 1.5);
+
+            particle.rotation +=
+              particle.vr;
+
+
+            const fade =
+              1 - progress;
+
+
+            ctx.save();
+
+
+            ctx.globalAlpha =
+              particle.alpha *
+              fade;
+
+
+            ctx.translate(
+              particle.x,
+              particle.y
+            );
+
+
+            ctx.rotate(
+              particle.rotation
+            );
+
+
+            ctx.fillStyle =
+              `rgb(
+                ${particle.r},
+                ${particle.g},
+                ${particle.b}
+              )`;
+
+
+            ctx.fillRect(
+              -particle.size / 2,
+              -particle.size / 2,
+              particle.size,
+              particle.size
+            );
+
+
+            ctx.restore();
+          }
+        );
+
+
+        if (progress < 1) {
+
+          requestAnimationFrame(
+            frame
+          );
+
+        } else {
+
+          canvas.style.opacity =
+            "0";
+
+          welcome.style.display =
+            "none";
+
+          input.focus();
+        }
+      }
+
 
       requestAnimationFrame(
         frame
       );
-
     }
 
-    else {
 
-      canvas.style.opacity =
-        "0";
 
-      welcome.style.display =
-        "none";
+    /* ==================================================
+       ACTIVATE CHOLO
+       ================================================== */
 
-      input.focus();
+    function activateCholo() {
 
+      if (running) {
+        return;
+      }
+
+
+      running = true;
+
+
+      welcome.classList.add(
+        "activating"
+      );
+
+
+      /*
+        Start revealing the dialog while
+        Cholo is coming toward the viewer.
+      */
+
+      setTimeout(
+        () => {
+
+          experience.classList.add(
+            "visible"
+          );
+
+        },
+        300
+      );
+
+
+      /*
+        Then dissolve him.
+      */
+
+      setTimeout(
+        dissolve,
+        520
+      );
     }
 
-  }
 
-
-  requestAnimationFrame(
-    frame
-  );
-
-}
-
-
-/* CLICK CHOLO */
-
-cholo.addEventListener(
-  "click",
-  function() {
-
-    if (running) {
-      return;
-    }
-
-    running = true;
-
-
-    welcome.classList.add(
-      "activating"
+    cholo.addEventListener(
+      "click",
+      activateCholo
     );
 
 
-    /* Reveal the dialog underneath */
+    /*
+      Keyboard accessibility:
+      tab to Cholo isn't necessary for the
+      visual prototype yet, but Enter in the
+      composer is ready for the next stage.
+    */
 
-    setTimeout(
+    input.addEventListener(
+      "keydown",
+      event => {
+
+        if (event.key === "Enter") {
+
+          event.preventDefault();
+
+          sendButton.click();
+        }
+      }
+    );
+
+
+    /*
+      Intentionally blank for now.
+      Next step: Cholo actually responds.
+    */
+
+    sendButton.addEventListener(
+      "click",
       () => {
 
-        experience.classList.add(
-          "visible"
+        const answer =
+          input.value.trim();
+
+        if (!answer) {
+          return;
+        }
+
+        console.log(
+          "Visitor said:",
+          answer
         );
-
-      },
-      300
+      }
     );
 
-
-    /* Then break Cholo apart */
-
-    setTimeout(
-      dissolve,
-      520
-    );
-
-  }
-);
-
-</script>
+  </script>
 
 </body>
+
 </html>
