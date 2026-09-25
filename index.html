@@ -179,7 +179,7 @@
   }
 
   .dialog {
-    width: min(580px, 100%);
+    width: min(760px, 100%);
 
     background: var(--panel);
 
@@ -219,105 +219,51 @@
   }
 
   .dialog-name {
-    font-size: 14px;
-    font-weight: 800;
-    letter-spacing: .05em;
-  }
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: .05em;
+}
 
-  .dialog-status {
-    display: flex;
-    align-items: center;
-    gap: 6px;
+.dialog-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 
-    margin-top: 4px;
+  margin-top: 5px;
 
-    color: var(--muted);
-    font-size: 11px;
-  }
+  color: var(--muted);
+  font-size: 16px;
+}
 
-  .status-dot {
-    width: 8px;
-    height: 8px;
+.message-name {
+  color: var(--yellow);
 
-    border-radius: 50%;
-    background: var(--green);
-  }
+  font-size: 20px;
+  font-weight: 800;
+}
 
-  .conversation {
-    padding: 32px 26px 28px;
-  }
+.message-text {
+  color: #dedee1;
 
-  .message {
-    display: flex;
-    gap: 13px;
-  }
+  font-size: 34px;
+  line-height: 1.35;
+}
 
-  .message-avatar {
-    width: 42px;
-    height: 42px;
+#visitorAnswer {
+  flex: 1;
+  min-width: 0;
 
-    flex: 0 0 42px;
+  border: 0;
+  outline: 0;
 
-    border-radius: 50%;
-    object-fit: cover;
+  padding: 20px;
 
-    background: black;
-  }
+  background: transparent;
+  color: white;
 
-  .message-body {
-    flex: 1;
-  }
-
-  .message-meta {
-    margin-bottom: 6px;
-  }
-
-  .message-name {
-    color: var(--yellow);
-
-    font-size: 13px;
-    font-weight: 800;
-  }
-
-  .message-text {
-    color: #dedee1;
-
-    font-size: 18px;
-    line-height: 1.55;
-  }
-
-  .message-text strong {
-    color: white;
-  }
-
-  .composer {
-    display: flex;
-
-    margin-top: 28px;
-
-    background: var(--panel2);
-
-    border: 1px solid #37373d;
-    border-radius: 9px;
-
-    overflow: hidden;
-  }
-
-  #visitorAnswer {
-    flex: 1;
-    min-width: 0;
-
-    border: 0;
-    outline: 0;
-
-    padding: 16px;
-
-    background: transparent;
-    color: white;
-
-    font: inherit;
-    font-size: 16px;
-  }
+  font: inherit;
+  font-size: 22px;
+}
 
   #visitorAnswer::placeholder {
     color: #72727a;
@@ -354,12 +300,16 @@
     }
 
     .conversation {
-      padding: 26px 18px 22px;
+      padding: 44px 36px 36px;
     }
 
     .message-text {
-      font-size: 16px;
-    }
+     font-size: 26px;
+   }
+   
+   #visitorAnswer {
+     font-size: 18px;
+   }
 
   }
 
