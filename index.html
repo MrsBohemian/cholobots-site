@@ -1268,6 +1268,11 @@ function addVisitorMessage(text) {
     document.querySelector(".composer");
 
   composer.before(message);
+  const conversation =
+  document.querySelector(".conversation");
+
+conversation.scrollTop =
+  conversation.scrollHeight;
 }
 
 
@@ -1350,6 +1355,11 @@ function addCholoMessage(text) {
     document.querySelector(".composer");
 
   composer.before(message);
+  const conversation =
+  document.querySelector(".conversation");
+
+conversation.scrollTop =
+  conversation.scrollHeight;
 }
 
 
