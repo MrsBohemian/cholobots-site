@@ -1343,7 +1343,15 @@ function addCholoMessage(text) {
 }
 
 
-function handleVisitorAnswer() {
+const conversationHistory = [
+  {
+    role: "assistant",
+    content: "¿Qué onda? What brings you here today?"
+  }
+];
+
+
+async function handleVisitorAnswer() {
 
   const answer =
     input.value.trim();
@@ -1355,10 +1363,15 @@ function handleVisitorAnswer() {
 
   addVisitorMessage(answer);
 
+  conversationHistory.push({
+    role: "user",
+    content: answer
+  });
+
+
   input.value = "";
 
   input.disabled = true;
-
   sendButton.disabled = true;
 
 
@@ -1366,38 +1379,71 @@ function handleVisitorAnswer() {
     addTypingIndicator();
 
 
-  /*
-    Temporary response.
+  try {
 
-    Next step:
-    replace this with Cholo's actual AI response.
-  */
+    const response = await fetch(
+      "https://cholobots-brain-production.up.railway.app/chat",
+      {
+        method: "POST",
 
-  setTimeout(
-    () => {
+        headers: {
+          "Content-Type": "application/json"
+        },
 
-      typing.remove();
+        body: JSON.stringify({
+          messages: conversationHistory
+        })
+      }
+    );
 
-      addCholoMessage(
-        "¡Órale! Pues come on — let me show you what us Cholobots do."
+
+    const data =
+      await response.json();
+
+
+    typing.remove();
+
+
+    if (!response.ok) {
+      throw new Error(
+        data.error || "Cholo couldn't respond."
       );
+    }
 
-      input.disabled = false;
 
-      sendButton.disabled = false;
+    const reply =
+      data.reply;
 
-      input.focus();
 
-    },
-    900
-  );
+    addCholoMessage(reply);
+
+
+    conversationHistory.push({
+      role: "assistant",
+      content: reply
+    });
+
+
+  } catch (error) {
+
+    console.error(error);
+
+    if (typing.isConnected) {
+      typing.remove();
+    }
+
+    addCholoMessage(
+      "Chale. I tripped over an extension cord. Try me again."
+    );
+
+  } finally {
+
+    input.disabled = false;
+    sendButton.disabled = false;
+
+    input.focus();
+  }
 }
-
-
-sendButton.addEventListener(
-  "click",
-  handleVisitorAnswer
-);
 
   </script>
 
