@@ -1445,7 +1445,7 @@ async function handleVisitorAnswer() {
       data.reply;
 
 
-    addCholoMessage(reply);
+    addBotMessage("CHOLO", reply);
 
 
     conversationHistory.push({
@@ -1462,7 +1462,7 @@ async function handleVisitorAnswer() {
       typing.remove();
     }
 
-    addCholoMessage(
+    addBotMessage(
       "Chale. I tripped over an extension cord. Try me again."
     );
 
