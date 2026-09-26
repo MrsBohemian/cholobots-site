@@ -1319,7 +1319,18 @@ function addTypingIndicator() {
 }
 
 
-function addCholoMessage(text) {
+function addBotMessage(speaker, text) {
+
+  const botNames = {
+    CHOLO: "CHOLO",
+    CHISME: "CHISME",
+    METICHE: "METICHE",
+    CRUDO: "CRUDO",
+    GUARDA: "GUARDA"
+  };
+
+  const displayName =
+    botNames[speaker] || "CHOLO";
 
   const message =
     document.createElement("div");
@@ -1336,17 +1347,16 @@ function addCholoMessage(text) {
     <div class="message-body">
 
       <div class="message-meta">
-
-        <span class="message-name">
-          CHOLO
-        </span>
-
+        <span class="message-name"></span>
       </div>
 
       <div class="message-text"></div>
 
     </div>
   `;
+
+  message.querySelector(".message-name")
+    .textContent = displayName;
 
   message.querySelector(".message-text")
     .textContent = text;
@@ -1355,13 +1365,13 @@ function addCholoMessage(text) {
     document.querySelector(".composer");
 
   composer.before(message);
+
   const conversation =
-  document.querySelector(".conversation");
+    document.querySelector(".conversation");
 
-conversation.scrollTop =
-  conversation.scrollHeight;
+  conversation.scrollTop =
+    conversation.scrollHeight;
 }
-
 
 const conversationHistory = [
   {
